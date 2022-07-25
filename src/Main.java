@@ -1,4 +1,7 @@
+import org.w3c.dom.html.HTMLAreaElement;
+
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -11,6 +14,97 @@ public class Main {
     private static int counterMove = 1;
     private static char symbol = 'X';
     private static char[][] plansza = new char[ROW][COLUMNE];
+
+
+    enum Phase {
+        PREPARTION,
+        GAME
+    }
+    private Phase phase;
+    private List<Ship> player1ships;
+    private List<Ship> player2ships;
+
+    void player1Prepare() {
+        for (int i = 0; i < SHIPS_LIMIT; i++) {
+            // TODO wczytanie współrzędnych i pozycji i długości
+            // x i y
+            // iteracja po player1ships i player2ships
+            player1ships.forEach(ship -> {
+                if (!ship.isColliding(x, y)) {
+                    player1ships.add(new Ship(x, y, position, length));
+                }
+            });
+        }
+    }
+
+
+    static class Ship {
+        // pozycyjny właściwości
+        int length;
+        int x;
+        int y;
+        Position position;
+
+
+        int hitCounter = 0;
+        boolean dead = false;
+
+
+        public enum Position {
+            HORIZONTAL,
+            VERTICAL
+        };
+
+        public boolean isHit(int x, int y) {
+            // TODO x y
+            // hitCounter++
+            // hitcounter > length
+            // dead = true;
+        }
+
+        public boolean isColliding(int x, int y, Position position, int legth) {
+            if (position == Position.HORIZONTAL) {
+                if (this.y == y) {
+                    if (this.x < y + length) {
+                        return true;
+                    }
+                    // TODO ...
+                }
+            }
+            return false;
+        }
+    }
+
+    void render(List<Ship> player1ships, List<Ship> player2ships) {
+        char[][] plansza = new char[ROW][COLUMNE];
+        player1ships.forEach(s -> {
+            if (s.position == Ship.Position.HORIZONTAL) {
+                for (int i = 0; i < s.length; i++)
+                    plansza[s.x + i][s.y] = 'X';
+            }
+            if (s.position == Ship.Position.VERTICAL) {
+                for (int i = 0; i < s.length; i++)
+                    plansza[s.x][s.y + i] = 'X';
+            }
+        });
+        player2ships.forEach(s -> {
+            if (s.position == Ship.Position.HORIZONTAL) {
+                for (int i = 0; i < s.length; i++)
+                    plansza[s.x + i][s.y] = 'X';
+            }
+            if (s.position == Ship.Position.VERTICAL) {
+                for (int i = 0; i < s.length; i++)
+                    plansza[s.x][s.y + i] = 'X';
+            }
+        });
+        for (int i = 0; i < plansza.length; i++) {
+            System.out.print(i + "\t");
+            for (int j = 0; j < plansza.length; j++) {
+                System.out.print(plansza[i][j] + "\t");
+            }
+            System.out.println();
+        }
+    }
 
     public static void main(String[] args) {
         // losowanie kto zaczyna
@@ -51,7 +145,7 @@ public class Main {
 
     }
 
-    private static boolean ifWin(char[][] plansza, char symbol) {
+    public static boolean ifWin(char[][] plansza, char symbol) {
         boolean checkRows = checkRow(plansza, symbol);
         boolean checkColumns = checkColumns(plansza, symbol);
         boolean checkDiagonal1 = checkDiagonal1(plansza, symbol);
